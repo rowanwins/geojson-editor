@@ -1,5 +1,5 @@
 <template>
-  <Row>
+  <Row class="codeArea">
     <codemirror ref="myCm" :value="code" :options="cmOptions" @input="onCmCodeChange"></codemirror>
   </Row>
 </template>
@@ -39,14 +39,12 @@ export default {
   },
   methods: {
     onCmCodeChange: function (newGeoJSON) {
-      this.errorLines.forEach(function (line) {
-        this.$refs.myCm.codemirror.doc.removeLineClass(line - 1, 'gutter', 'geojsonError')
-      }, this)
+      this.cleanErrorMarks()
+
       this.errorLines = []
 
       this.errors = lint.hint(newGeoJSON)
       this.errors.forEach(function (err) {
-        console.log(err.message)
         if (err.message.startsWith('Parse error')) {
           this.$store.commit('setRequiresParsingFix', true)
         } else if (err.message.startsWith('Polygons and MultiPolygons')) {
@@ -56,12 +54,22 @@ export default {
           this.$store.commit('setRequiresParsingFix', false)
         }
         this.errorLines.push(err.line)
-        this.$refs.myCm.codemirror.doc.addLineClass(err.line + 1, 'gutter', 'geojsonError')
       }, this)
 
       if (this.errors.length === 0) modifyGeoJSON(JSON.parse(newGeoJSON))
-      this.$store.commit('setGeoJSON', newGeoJSON)
+      if (newGeoJSON !== this.code) this.$store.commit('setGeoJSON', newGeoJSON)
+      this.markErrors()
     },
+    markErrors () {
+      this.errors.forEach(function (err) {
+        this.$refs.myCm.codemirror.doc.addLineClass(err.line + 1, 'gutter', 'geojsonError')
+      }, this)
+    },
+    cleanErrorMarks () {
+      this.errorLines.forEach(function (line) {
+        this.$refs.myCm.codemirror.doc.removeLineClass(line + 1, 'gutter', 'geojsonError')
+      }, this)
+    }
   },
   components: {
     codemirror
@@ -70,13 +78,25 @@ export default {
 </script>
 
 <style>
+.codeArea {
+  height: calc(100vh - 100px);
+}
 .vue-codemirror, .CodeMirror{
-  height: 600px;
+  height: 100%;
 }
 .geojsonError{
-  background: #df0707;
+  background: #e14d0d;
 }
 .geojsonError .CodeMirror-linenumber{
   color: white;
+}
+.cm-s-default .cm-string {
+  color: #4F5D75;
+}
+.cm-s-default .cm-number {
+  color: #EF8354;
+}
+.CodeMirror-activeline-background{
+  background: #bfc0c026;
 }
 </style>

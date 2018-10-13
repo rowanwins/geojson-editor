@@ -26,5 +26,15 @@ export default new Vuex.Store({
     setRequiresWindingOrderFix (state, fix) {
       state.requiresWindingOrderFix = fix
     }
+  },
+  getters: {
+    featureCount: function (state) {
+      const gj = JSON.parse(state.geojson)
+      if (gj.type === 'FeatureCollection') return gj.features.length
+      if (gj.type === 'GeometryCollection') return gj.geometrieslength
+      if (gj.type === 'Feature') return 1
+      if (gj.type === 'Polygon' || gj.type === 'LineString') return 1
+      return 0
+    }
   }
 })

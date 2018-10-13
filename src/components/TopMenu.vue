@@ -2,7 +2,7 @@
   <Row class="topMenu">
         <Dropdown @on-click="handleClick" placement="bottom-start">
         <a href="javascript:void(0)">
-          <Button type="primary">
+          <Button class="topBtn">
             Fix Errors
             <Icon type="arrow-down-b"></Icon>
           </Button>
@@ -12,7 +12,9 @@
           <DropdownItem name="fixWindingOrder" :disabled="doesntRequireWindingFixing">Fix Winding Order</DropdownItem>
         </DropdownMenu>
     </Dropdown>
-
+    <Button class="topBtn right" @click="clearFeatures">
+      Clear {{featureCount}} {{ featureCount > 1 ? 'features' : 'feature' }}
+    </Button>
   </Row>
 </template>
 
@@ -26,9 +28,18 @@ export default {
     },
     doesntRequireWindingFixing () {
       return !this.$store.state.requiresWindingOrderFix
+    },
+    featureCount () {
+      return this.$store.getters.featureCount
     }
   },
   methods: {
+    clearFeatures: function () {
+      this.$store.commit('setGeoJSON', {
+        "type": "FeatureCollection",
+        "features": []
+      })
+    },
     handleClick: function (e) {
       if (e === 'addMarks') this.addMarks()
       if (e === 'fixWindingOrder') this.fixWindingOrder()
@@ -50,7 +61,15 @@ export default {
 <style>
 .topMenu{
   padding: 10px;
-  background: #29b1ba;
+  background: #EF8354;
   width: 100%;
+}
+.topBtn {
+  background-color: #4F5D75;
+  color: white;
+  border: none;
+}
+.right {
+  float: right
 }
 </style>

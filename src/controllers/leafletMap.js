@@ -6,9 +6,10 @@ require('leaflet-draw') //eslint-disable-line
 import store from '../store'
 
 let drawnItems = null
+let map = null
 
 export function createMap () {
-  var map = L.map('map').setView([51.505, -0.09], 13)
+  map = L.map('map').setView([0, 0], 2)
 
   L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
@@ -16,7 +17,14 @@ export function createMap () {
     maxZoom: 19
   }).addTo(map)
 
-  drawnItems = L.geoJSON().addTo(map)
+  drawnItems = L.geoJSON(null, {
+    style: function () {
+      return {
+        color: '#4F5D75'        
+      }
+    }
+  }).addTo(map)
+
   map.addControl(new L.Control.Draw({
     edit: {
       featureGroup: drawnItems,
@@ -60,7 +68,9 @@ function openPopup(e) {
 export function modifyGeoJSON (newGeoJSON) {
   drawnItems.clearLayers()
   drawnItems.addData(newGeoJSON)
-  drawnItems.eachLayer(function (layer) {
-    layer.on('click', openPopup)
-  })
+
+  map.fitBounds(drawnItems.getBounds())
+  // drawnItems.eachLayer(function (layer) {
+  //   layer.on('click', openPopup)
+  // })
 }
