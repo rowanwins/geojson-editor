@@ -1,6 +1,6 @@
 <template>
   <Row class="topMenu">
-        <Dropdown @on-click="handleClick" placement="bottom-start">
+      <Dropdown @on-click="handleFixClick" placement="bottom-start">
         <a href="javascript:void(0)">
           <Button class="topBtn">
             Fix Errors
@@ -12,14 +12,31 @@
           <DropdownItem name="fixWindingOrder" :disabled="doesntRequireWindingFixing">Fix Winding Order</DropdownItem>
         </DropdownMenu>
     </Dropdown>
+    <Dropdown @on-click="handleToolClick" placement="bottom-start">
+        <a href="javascript:void(0)">
+          <Button class="topBtn">
+            Tools
+            <Icon type="arrow-down-b"></Icon>
+          </Button>
+        </a>
+        <DropdownMenu slot="list">
+          <DropdownItem name="createRandomPoints">Create Random Points</DropdownItem>
+          <DropdownItem name="zoomTo">Zoom to Features</DropdownItem>
+          <DropdownItem name="multipartToSinglepart">Convert Multipart to Singlepart geometries</DropdownItem>
+        </DropdownMenu>
+    </Dropdown>
     <Button class="topBtn right" @click="clearFeatures">
-      Clear {{featureCount}} {{ featureCount > 1 ? 'features' : 'feature' }}
+      Clear {{ featureCount }} {{ featureCount > 1 ? 'features' : 'feature' }}
     </Button>
   </Row>
 </template>
 
 <script>
 import rewind from '@turf/rewind'
+import flatten from '@turf/flatten'
+import {randomPoint} from '@turf/random'
+
+import { zoomToFeatures } from '../controllers/leafletMap'
 export default {
   name: 'TopMenu',
   computed: {
@@ -31,6 +48,9 @@ export default {
     },
     featureCount () {
       return this.$store.getters.featureCount
+    },
+    currentGeojson () {
+      return JSON.parse(this.$store.state.geojson)
     }
   },
   methods: {
@@ -40,9 +60,24 @@ export default {
         "features": []
       })
     },
-    handleClick: function (e) {
+    handleFixClick: function (e) {
       if (e === 'addMarks') this.addMarks()
       if (e === 'fixWindingOrder') this.fixWindingOrder()
+    },
+    handleToolClick: function (e) {
+      if (e === 'createRandomPoints') this.createRandomPoints()
+      if (e === 'zoomTo') zoomToFeatures()
+      if (e === 'multipartToSinglepart') this.convertMultipart()
+    },
+    convertMultipart: function () {
+      this.$store.commit('setGeoJSON', flatten(this.currentGeojson))
+    },
+    createRandomPoints: function () {
+      const newPoints = randomPoint(25, {bbox: [-180, -90, 180, 90]})
+      this.$store.commit('setGeoJSON', {
+        type: 'FeatureCollection',
+        features: this.currentGeojson.features.concat(newPoints.features)
+      })
     },
     addMarks: function () {
       var parsedJson = this.$store.state.geojson.replace(/(['"])?([a-zA-Z0-9_]+)(['"])?:([^\/])/g, '"$2":$4') //eslint-disable-line
@@ -61,13 +96,17 @@ export default {
 <style>
 .topMenu{
   padding: 10px;
-  background: #EF8354;
+  background: #FFDC80;
   width: 100%;
 }
 .topBtn {
-  background-color: #4F5D75;
-  color: white;
-  border: none;
+  background-color: transparent;
+  color: #182438;
+  border: 1px solid white;
+  margin-left: 20px;
+}
+.ivu-dropdown .ivu-select-dropdown{
+  margin-left: 20px;
 }
 .right {
   float: right

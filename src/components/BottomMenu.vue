@@ -4,14 +4,14 @@
 
     <ButtonGroup>
       <Button v-on:click="save">Save as geojson</Button>
-      <Dropdown trigger="click" placement="top-end">
+      <Dropdown trigger="click" placement="top-end" @on-click="saveInFormats">
         <a href="javascript:void(0)">
           <Button icon="arrow-up-b"></Button>
         </a>
         <DropdownMenu slot="list">
-          <DropdownItem>Shapefile</DropdownItem>
-          <DropdownItem>WKT</DropdownItem>
-          <DropdownItem>TopoJSON</DropdownItem>
+          <DropdownItem  name="shp" >Shapefile</DropdownItem>
+          <DropdownItem  name="wkt" >WKT</DropdownItem>
+          <DropdownItem  name="topo" >TopoJSON</DropdownItem>
         </DropdownMenu>
       </Dropdown>
     </ButtonGroup>
@@ -20,6 +20,8 @@
 
 <script>
 var FileSaver = require('file-saver') //eslint-disable-line
+var topojson = require('topojson')
+var wkt = require('wellknown');
 
 export default {
   name: 'BottomMenu',
@@ -43,6 +45,29 @@ export default {
         type: "text/plain;charset=utf-8"
       });
       FileSaver.saveAs(file);
+    },
+    saveInFormats: function (e) {
+      let outData = null
+      let outName = null
+      if (e === 'topo') {
+        outData = topojson.topology(this.$store.state.geojson)
+        outName = 'topojson'
+      }
+      if (e === 'wkt') {
+        outData = wkt.stringify({
+          type: 'GeometryCollection',
+          geometries: JSON.parse(this.$store.state.geojson).features.map(function (f) {
+            return f.geometry
+          })
+        })
+        outName = 'wkt'
+      }
+
+        
+      var file = new File([JSON.stringify(outData)], `export.${outName}`, {
+        type: "text/plain;charset=utf-8"
+      });
+      FileSaver.saveAs(file);
     }
   }
 }
@@ -54,7 +79,7 @@ export default {
   height: 50px;
   bottom: 0px;
   padding: 10px;
-  background: #bfc0c07d;
+  background: #F3F3F3;
   width: 100%;
   text-align: right;
   z-index: 1000;

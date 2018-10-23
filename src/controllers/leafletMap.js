@@ -20,8 +20,11 @@ export function createMap () {
   drawnItems = L.geoJSON(null, {
     style: function () {
       return {
-        color: '#4F5D75'        
+        color: '#666C79'        
       }
+    },
+    pointToLayer: function(geoJsonPoint, latlng) {
+      return L.circleMarker(latlng);
     }
   }).addTo(map)
 
@@ -65,11 +68,16 @@ function openPopup(e) {
   store.commit('setSelectedProperties', feature.properties)
 }
 
+export function zoomToFeatures () {
+   map.fitBounds(drawnItems.getBounds()) 
+}
+
 export function modifyGeoJSON (newGeoJSON) {
   drawnItems.clearLayers()
   drawnItems.addData(newGeoJSON)
 
-  map.fitBounds(drawnItems.getBounds())
+  zoomToFeatures()
+
   // drawnItems.eachLayer(function (layer) {
   //   layer.on('click', openPopup)
   // })

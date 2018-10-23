@@ -85,16 +85,16 @@ export default {
   height: 100%;
 }
 .geojsonError{
-  background: #e14d0d;
+  background: #E36A70;
 }
 .geojsonError .CodeMirror-linenumber{
   color: white;
 }
 .cm-s-default .cm-string {
-  color: #4F5D75;
+  color: #1A273A;
 }
 .cm-s-default .cm-number {
-  color: #EF8354;
+  color: #333E4E;
 }
 .CodeMirror-activeline-background{
   background: #bfc0c026;
