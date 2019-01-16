@@ -1,8 +1,8 @@
 <template>
-  <Row id="app">
+  <i-row id="app">
     <Map/>
     <Sidebar/>
-  </Row>
+  </i-row>
 </template>
 
 <script>
