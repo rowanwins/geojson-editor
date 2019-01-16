@@ -1,6 +1,6 @@
 /* eslint-disable */
 module.exports = {
   baseUrl: process.env.NODE_ENV === 'production'
-    ? '/geojson-editor/'
+    ? '/geojson-editor/dist'
     : '/'
 }
