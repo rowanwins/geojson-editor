@@ -1,9 +1,9 @@
 <template>
-   <Col span="10" class="sidebar">
+   <i-col span="10" class="sidebar">
     <top-menu></top-menu>
     <code-area></code-area>
     <bottom-menu></bottom-menu>
-  </Col>
+  </i-col>
 </template>
 
 <script>

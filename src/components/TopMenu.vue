@@ -1,5 +1,5 @@
 <template>
-  <Row class="topMenu">
+  <i-row class="topMenu">
       <Dropdown @on-click="handleFixClick" placement="bottom-start">
         <a href="javascript:void(0)">
           <Button class="topBtn">
@@ -28,7 +28,7 @@
     <Button class="topBtn right" @click="clearFeatures">
       Clear {{ featureCount }} {{ featureCount > 1 ? 'features' : 'feature' }}
     </Button>
-  </Row>
+  </i-row>
 </template>
 
 <script>

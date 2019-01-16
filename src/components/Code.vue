@@ -1,7 +1,7 @@
 <template>
-  <Row class="codeArea">
+  <i-row class="codeArea">
     <codemirror ref="myCm" :value="code" :options="cmOptions" @input="onCmCodeChange"></codemirror>
-  </Row>
+  </i-row>
 </template>
 
 <script>

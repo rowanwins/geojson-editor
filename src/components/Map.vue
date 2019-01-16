@@ -1,7 +1,7 @@
 <template>
-   <Col span="14" class="mapContainer">
+   <i-col span="14" class="mapContainer">
     <div id="map"></div>
-  </Col>
+  </i-col>
 </template>
 
 <script>

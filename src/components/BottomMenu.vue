@@ -1,5 +1,5 @@
 <template>
-  <Row class="bottomMenu">
+  <i-row class="bottomMenu">
     <Button v-on:click="copy" class="pad">Copy to clipboard</Button> 
 
     <ButtonGroup>
@@ -15,7 +15,7 @@
         </DropdownMenu>
       </Dropdown>
     </ButtonGroup>
-  </Row>
+  </i-row>
 </template>
 
 <script>
