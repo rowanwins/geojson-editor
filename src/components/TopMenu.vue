@@ -26,7 +26,7 @@
         </DropdownMenu>
     </Dropdown>
     <Button class="topBtn right" @click="clearFeatures">
-      Clear {{ featureCount }} {{ featureCount > 1 ? 'features' : 'feature' }}
+      Clear {{ featureCount }} {{ featureCount !== 0 ? 'features' : 'feature' }}
     </Button>
   </Row>
 </template>

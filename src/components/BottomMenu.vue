@@ -1,5 +1,5 @@
 <template>
-  <Row class="bottomMenu">
+  <Row id="bottomMenu">
     <Button v-on:click="copy" class="pad">Copy to clipboard</Button> 
 
     <ButtonGroup>
@@ -9,9 +9,9 @@
           <Button icon="arrow-up-b"></Button>
         </a>
         <DropdownMenu slot="list">
-          <DropdownItem  name="shp" >Shapefile</DropdownItem>
-          <DropdownItem  name="wkt" >WKT</DropdownItem>
-          <DropdownItem  name="topo" >TopoJSON</DropdownItem>
+          <DropdownItem name="shp">Shapefile</DropdownItem>
+          <DropdownItem name="wkt">WKT</DropdownItem>
+          <DropdownItem name="topojson" >TopoJSON</DropdownItem>
         </DropdownMenu>
       </Dropdown>
     </ButtonGroup>
@@ -48,10 +48,9 @@ export default {
     },
     saveInFormats: function (e) {
       let outData = null
-      let outName = null
+      let outName = e
       if (e === 'topo') {
         outData = topojson.topology(this.$store.state.geojson)
-        outName = 'topojson'
       }
       if (e === 'wkt') {
         outData = wkt.stringify({
@@ -60,7 +59,6 @@ export default {
             return f.geometry
           })
         })
-        outName = 'wkt'
       }
 
         
@@ -74,7 +72,7 @@ export default {
 </script>
 
 <style>
-.bottomMenu{
+#bottomMenu{
   position: absolute;
   height: 50px;
   bottom: 0px;

@@ -1,8 +1,8 @@
 <template>
-  <i-row id="app">
+  <Row id="app">
     <Map/>
     <Sidebar/>
-  </i-row>
+  </Row>
 </template>
 
 <script>
@@ -18,6 +18,13 @@ export default {
     Map,
     Sidebar,
     Properties
+  },
+  mounted: function () {
+    let params = (new URL(document.location)).searchParams;
+    let data = params.get("data");
+    let geojson = JSON.parse(data)
+
+    this.$store.commit('setGeoJSON', JSON.stringify(geojson, null, 2))
   }
 }
 </script>
