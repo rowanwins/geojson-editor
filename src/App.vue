@@ -22,9 +22,10 @@ export default {
   mounted: function () {
     let params = (new URL(document.location)).searchParams;
     let data = params.get("data");
-    let geojson = JSON.parse(data)
-
-    this.$store.commit('setGeoJSON', JSON.stringify(geojson, null, 2))
+    if (data) {
+      let geojson = JSON.parse(data)
+      this.$store.commit('setGeoJSON', JSON.stringify(geojson, null, 2))      
+    }
   }
 }
 </script>
