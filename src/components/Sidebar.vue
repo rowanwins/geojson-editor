@@ -1,8 +1,11 @@
 <template>
-   <i-col span="10" class="sidebar">
-    <top-menu></top-menu>
-    <code-area></code-area>
-    <bottom-menu></bottom-menu>
+  <i-col
+    span="10"
+    class="sidebar"
+  >
+    <top-menu />
+    <code-area />
+    <bottom-menu />
   </i-col>
 </template>
 

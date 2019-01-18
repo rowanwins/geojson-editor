@@ -1,6 +1,11 @@
 <template>
   <Row class="codeArea">
-    <codemirror ref="myCm" :value="code" :options="cmOptions" @input="onCmCodeChange"></codemirror>
+    <codemirror
+      ref="myCm"
+      :value="code"
+      :options="cmOptions"
+      @input="onCmCodeChange"
+    />
   </Row>
 </template>
 
@@ -17,6 +22,9 @@ var FileSaver = require('file-saver') //eslint-disable-line
 
 export default {
   name: 'CodeArea',
+  components: {
+    codemirror
+  },
   data () {
     return {
       errorLines: [],
@@ -70,9 +78,6 @@ export default {
         this.$refs.myCm.codemirror.doc.removeLineClass(line + 1, 'gutter', 'geojsonError')
       }, this)
     }
-  },
-  components: {
-    codemirror
   }
 }
 </script>

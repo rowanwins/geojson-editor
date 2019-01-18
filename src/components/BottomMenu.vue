@@ -1,17 +1,21 @@
 <template>
   <Row id="bottomMenu">
-    <Button v-on:click="copy" class="pad">Copy to clipboard</Button> 
+    <Button class="pad" @click="copy">
+      Copy to clipboard
+    </Button>
 
     <ButtonGroup>
-      <Button v-on:click="save">Save as geojson</Button>
+      <Button @click="saveToGeojson">
+        Save as geojson
+      </Button>
       <Dropdown trigger="click" placement="top-end" @on-click="saveInFormats">
         <a href="javascript:void(0)">
-          <Button icon="arrow-up-b"></Button>
+          <Button icon="arrow-up-b" />
         </a>
         <DropdownMenu slot="list">
-          <DropdownItem name="shp">Shapefile</DropdownItem>
-          <DropdownItem name="wkt">WKT</DropdownItem>
-          <DropdownItem name="topojson" >TopoJSON</DropdownItem>
+          <DropdownItem v-for="format in supportedFormats" :key="format.value" :name="format.value">
+            {{ format.label }}
+          </DropdownItem>
         </DropdownMenu>
       </Dropdown>
     </ButtonGroup>
@@ -19,12 +23,30 @@
 </template>
 
 <script>
-var FileSaver = require('file-saver') //eslint-disable-line
-var topojson = require('topojson')
-var wkt = require('wellknown');
+import FileSaver from 'file-saver'
+import { topology } from 'topojson-server'
+import wkt from 'wellknown'
+import shape from 'shp-write'
 
 export default {
   name: 'BottomMenu',
+  data () {
+    return {
+      supportedFormats: [{
+        label: 'Shapefile',
+        value: 'shp'
+      },
+      {
+        label: 'TopoJSON',
+        value: 'topojson'
+      },
+      {
+        label: 'WKT',
+        value: 'wkt'
+      }
+      ]
+    }
+  },
   methods: {
     copy: function () {
       const el = document.createElement('textarea');
@@ -40,7 +62,7 @@ export default {
       })
 
     },
-    save: function () {
+    saveToGeojson: function () {
       var file = new File([this.code], "exported.geojson", {
         type: "text/plain;charset=utf-8"
       });
@@ -60,8 +82,19 @@ export default {
           })
         })
       }
+      if (e == 'shp') {
+        var options = {
+            folder: 'myshapes',
+            types: {
+                point: 'mypoints',
+                polygon: 'mypolygons',
+                line: 'mylines'
+            }
+        }
+        shape.download(JSON.parse(this.$store.state.geojson), options)
+        return
+      }
 
-        
       var file = new File([JSON.stringify(outData)], `export.${outName}`, {
         type: "text/plain;charset=utf-8"
       });

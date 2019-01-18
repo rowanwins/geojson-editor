@@ -1,7 +1,19 @@
 import L from 'leaflet'
-import "leaflet/dist/leaflet.css"
-import "leaflet-draw/dist/leaflet.draw.css"
+import 'leaflet/dist/leaflet.css'
+import markerIcon from 'leaflet/dist/images/marker-icon.png'
+import marker2x from 'leaflet/dist/images/marker-icon-2x.png'
+import markerShadow from 'leaflet/dist/images/marker-shadow.png'
+import 'leaflet-draw/dist/leaflet.draw.css'
 require('leaflet-draw') //eslint-disable-line
+
+// Hack to get the markers into Vue correctly
+delete L.Icon.Default.prototype._getIconUrl
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: marker2x,
+  iconUrl: markerIcon,
+  shadowUrl: markerShadow
+})
+
 
 import store from '../store'
 
@@ -20,11 +32,8 @@ export function createMap () {
   drawnItems = L.geoJSON(null, {
     style: function () {
       return {
-        color: '#666C79'        
+        color: '#666C79'
       }
-    },
-    pointToLayer: function(geoJsonPoint, latlng) {
-      return L.circleMarker(latlng);
     }
   }).addTo(map)
 
@@ -69,14 +78,14 @@ function openPopup(e) {
 }
 
 export function zoomToFeatures () {
-   map.fitBounds(drawnItems.getBounds()) 
+   map.fitBounds(drawnItems.getBounds())
 }
 
 export function modifyGeoJSON (newGeoJSON) {
   drawnItems.clearLayers()
   drawnItems.addData(newGeoJSON)
 
-  zoomToFeatures()
+  // zoomToFeatures()
 
   // drawnItems.eachLayer(function (layer) {
   //   layer.on('click', openPopup)

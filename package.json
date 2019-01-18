@@ -16,7 +16,9 @@
     "iview": "^2.14.3",
     "leaflet": "^1.4.0",
     "leaflet-draw": "^1.0.4",
+    "shp-write": "^0.3.2",
     "topojson": "^3.0.2",
+    "topojson-server": "^3.0.0",
     "vue": "^2.5.22",
     "vue-codemirror": "^4.0.6",
     "vuex": "^3.0.1",
@@ -26,6 +28,10 @@
     "@vue/cli-plugin-babel": "^3.3.0",
     "@vue/cli-plugin-eslint": "^3.3.0",
     "@vue/cli-service": "^3.3.0",
+    "@vue/eslint-config-standard": "^4.0.0",
+    "babel-eslint": "^10.0.1",
+    "eslint": "^5.8.0",
+    "eslint-plugin-vue": "^5.0.0",
     "vue-template-compiler": "^2.5.22"
   },
   "babel": {
@@ -37,8 +43,16 @@
     "root": true,
     "extends": [
       "plugin:vue/essential",
-      "eslint:recommended"
-    ]
+      "eslint:recommended",
+      "@vue/standard"
+    ],
+    "env": {
+      "node": true
+    },
+    "rules": {},
+    "parserOptions": {
+      "parser": "babel-eslint"
+    }
   },
   "postcss": {
     "plugins": {

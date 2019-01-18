@@ -1,31 +1,56 @@
 <template>
   <Row class="topMenu">
-      <Dropdown @on-click="handleFixClick" placement="bottom-start">
-        <a href="javascript:void(0)">
-          <Button class="topBtn">
-            Fix Errors
-            <Icon type="arrow-down-b"></Icon>
-          </Button>
-        </a>
-        <DropdownMenu slot="list">
-          <DropdownItem name="addMarks" :disabled="doesntRequireParseFixing">Fix Quotation Marks on Keys</DropdownItem>
-          <DropdownItem name="fixWindingOrder" :disabled="doesntRequireWindingFixing">Fix Winding Order</DropdownItem>
-        </DropdownMenu>
+    <Dropdown
+      placement="bottom-start"
+      @on-click="handleFixClick"
+    >
+      <a href="javascript:void(0)">
+        <Button class="topBtn">
+          Fix Errors
+          <Icon type="arrow-down-b" />
+        </Button>
+      </a>
+      <DropdownMenu slot="list">
+        <DropdownItem
+          name="addMarks"
+          :disabled="doesntRequireParseFixing"
+        >
+          Fix Quotation Marks on Keys
+        </DropdownItem>
+        <DropdownItem
+          name="fixWindingOrder"
+          :disabled="doesntRequireWindingFixing"
+        >
+          Fix Winding Order
+        </DropdownItem>
+      </DropdownMenu>
     </Dropdown>
-    <Dropdown @on-click="handleToolClick" placement="bottom-start">
-        <a href="javascript:void(0)">
-          <Button class="topBtn">
-            Tools
-            <Icon type="arrow-down-b"></Icon>
-          </Button>
-        </a>
-        <DropdownMenu slot="list">
-          <DropdownItem name="createRandomPoints">Create Random Points</DropdownItem>
-          <DropdownItem name="zoomTo">Zoom to Features</DropdownItem>
-          <DropdownItem name="multipartToSinglepart">Convert Multipart to Singlepart geometries</DropdownItem>
-        </DropdownMenu>
+    <Dropdown
+      placement="bottom-start"
+      @on-click="handleToolClick"
+    >
+      <a href="javascript:void(0)">
+        <Button class="topBtn">
+          Tools
+          <Icon type="arrow-down-b" />
+        </Button>
+      </a>
+      <DropdownMenu slot="list">
+        <DropdownItem name="createRandomPoints">
+          Create Random Points
+        </DropdownItem>
+        <DropdownItem name="zoomTo">
+          Zoom to Features
+        </DropdownItem>
+        <DropdownItem name="multipartToSinglepart">
+          Convert Multipart to Singlepart geometries
+        </DropdownItem>
+      </DropdownMenu>
     </Dropdown>
-    <Button class="topBtn right" @click="clearFeatures">
+    <Button
+      class="topBtn right"
+      @click="clearFeatures"
+    >
       Clear {{ featureCount }} {{ featureCount !== 1 ? 'features' : 'feature' }}
     </Button>
   </Row>

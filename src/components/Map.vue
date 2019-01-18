@@ -1,6 +1,9 @@
 <template>
-   <i-col span="14" class="mapContainer">
-    <div id="map"></div>
+  <i-col
+    span="14"
+    class="mapContainer"
+  >
+    <div id="map" />
   </i-col>
 </template>
 

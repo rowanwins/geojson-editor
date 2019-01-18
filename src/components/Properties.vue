@@ -1,7 +1,9 @@
 <template>
-  <div v-if="selectedProperties !== null" class="featureProperties leaflet-bar">
+  <div
+    v-if="selectedProperties !== null"
+    class="featureProperties leaflet-bar"
+  >
     <h3>Feature Properties</h3>
-    
   </div>
 </template>
 

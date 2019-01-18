@@ -1,30 +1,29 @@
 <template>
   <Row id="app">
-    <Map/>
-    <Sidebar/>
+    <Map />
+    <Sidebar />
   </Row>
 </template>
 
 <script>
 import Map from './components/Map.vue'
 import Sidebar from './components/Sidebar.vue'
-import Properties from './components/Properties.vue'
+// import Properties from './components/Properties.vue'
 import store from './store'
 
 export default {
-  name: 'app',
+  name: 'App',
   store: store,
   components: {
     Map,
-    Sidebar,
-    Properties
+    Sidebar
   },
   mounted: function () {
     let params = (new URL(document.location)).searchParams;
     let data = params.get("data");
     if (data) {
       let geojson = JSON.parse(data)
-      this.$store.commit('setGeoJSON', JSON.stringify(geojson, null, 2))      
+      this.$store.commit('setGeoJSON', JSON.stringify(geojson, null, 2))
     }
   }
 }
