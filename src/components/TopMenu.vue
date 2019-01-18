@@ -1,38 +1,24 @@
 <template>
   <Row class="topMenu">
-    <Dropdown
-      placement="bottom-start"
-      @on-click="handleFixClick"
-    >
+    <Dropdown placement="bottom-start" @on-click="handleFixClick">
       <a href="javascript:void(0)">
         <Button class="topBtn">
-          Fix Errors
-          <Icon type="arrow-down-b" />
+          Fix Errors <Icon type="arrow-down-b" />
         </Button>
       </a>
       <DropdownMenu slot="list">
-        <DropdownItem
-          name="addMarks"
-          :disabled="doesntRequireParseFixing"
-        >
+        <DropdownItem name="addMarks" :disabled="doesntRequireParseFixing">
           Fix Quotation Marks on Keys
         </DropdownItem>
-        <DropdownItem
-          name="fixWindingOrder"
-          :disabled="doesntRequireWindingFixing"
-        >
+        <DropdownItem name="fixWindingOrder" :disabled="doesntRequireWindingFixing">
           Fix Winding Order
         </DropdownItem>
       </DropdownMenu>
     </Dropdown>
-    <Dropdown
-      placement="bottom-start"
-      @on-click="handleToolClick"
-    >
+    <Dropdown placement="bottom-start" @on-click="handleToolClick">
       <a href="javascript:void(0)">
         <Button class="topBtn">
-          Tools
-          <Icon type="arrow-down-b" />
+          Tools <Icon type="arrow-down-b" />
         </Button>
       </a>
       <DropdownMenu slot="list">
@@ -47,10 +33,7 @@
         </DropdownItem>
       </DropdownMenu>
     </Dropdown>
-    <Button
-      class="topBtn right"
-      @click="clearFeatures"
-    >
+    <Button class="topBtn right" @click="clearFeatures">
       Clear {{ featureCount }} {{ featureCount !== 1 ? 'features' : 'feature' }}
     </Button>
   </Row>
@@ -75,7 +58,7 @@ export default {
       return this.$store.getters.featureCount
     },
     currentGeojson () {
-      return JSON.parse(this.$store.state.geojson)
+      return this.$store.getters.geojson
     }
   },
   methods: {
@@ -106,13 +89,11 @@ export default {
     },
     addMarks: function () {
       var parsedJson = this.$store.state.geojson.replace(/(['"])?([a-zA-Z0-9_]+)(['"])?:([^\/])/g, '"$2":$4') //eslint-disable-line
-      this.$store.commit('setRequiresParsingFix', false)
       this.$store.commit('setGeoJSON', parsedJson)
     },
     fixWindingOrder: function () {
-      const newGeojson = rewind(JSON.parse(this.$store.state.geojson))
+      const newGeojson = rewind(this.$store.getters.geojson)
       this.$store.commit('setGeoJSON', newGeojson)
-      this.$store.commit('setRequiresWindingOrderFix', false)
     }
   }
 }

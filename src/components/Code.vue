@@ -1,5 +1,5 @@
 <template>
-  <Row class="codeArea">
+  <Row id="codeArea">
     <codemirror
       ref="myCm"
       :value="code"
@@ -14,11 +14,10 @@ import { modifyGeoJSON } from './../controllers/leafletMap'
 import { codemirror } from 'vue-codemirror'
 import 'codemirror/lib/codemirror.css'
 import 'codemirror/theme/base16-light.css'
-import'codemirror/addon/selection/active-line.js'
+import 'codemirror/addon/selection/active-line.js'
 import 'codemirror/mode/javascript/javascript.js'
 
-var lint = require('@mapbox/geojsonhint') //eslint-disable-line
-var FileSaver = require('file-saver') //eslint-disable-line
+import lint from '@mapbox/geojsonhint'
 
 export default {
   name: 'CodeArea',
@@ -42,16 +41,17 @@ export default {
   },
   computed: {
     code: function () {
-      return this.$store.state.geojson
+      return this.$store.state.geojsonString
     }
   },
   methods: {
-    onCmCodeChange: function (newGeoJSON) {
+    onCmCodeChange: function (newGeojsonString) {
       this.cleanErrorMarks()
 
       this.errorLines = []
 
-      this.errors = lint.hint(newGeoJSON)
+      this.errors = lint.hint(newGeojsonString)
+
       this.errors.forEach(function (err) {
         if (err.message.startsWith('Parse error')) {
           this.$store.commit('setRequiresParsingFix', true)
@@ -64,8 +64,14 @@ export default {
         this.errorLines.push(err.line)
       }, this)
 
-      if (this.errors.length === 0) modifyGeoJSON(JSON.parse(newGeoJSON))
-      if (newGeoJSON !== this.code) this.$store.commit('setGeoJSON', newGeoJSON)
+      if (this.errors.length === 0) {
+        const newGeoJSON = JSON.parse(newGeojsonString)
+        modifyGeoJSON(newGeoJSON)
+
+        this.$store.commit('setGeoJSON', newGeoJSON)
+
+      }
+
       this.markErrors()
     },
     markErrors () {
@@ -77,13 +83,14 @@ export default {
       this.errorLines.forEach(function (line) {
         this.$refs.myCm.codemirror.doc.removeLineClass(line + 1, 'gutter', 'geojsonError')
       }, this)
+      this.$store.commit('clearRequiresFixes')
     }
   }
 }
 </script>
 
 <style>
-.codeArea {
+#codeArea {
   height: calc(100vh - 100px);
 }
 .vue-codemirror, .CodeMirror{

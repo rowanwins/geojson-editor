@@ -72,12 +72,12 @@ export default {
       let outData = null
       let outName = e
       if (e === 'topo') {
-        outData = topojson.topology(this.$store.state.geojson)
+        outData = topojson.topology(this.$store.state.geojsonString)
       }
       if (e === 'wkt') {
         outData = wkt.stringify({
           type: 'GeometryCollection',
-          geometries: JSON.parse(this.$store.state.geojson).features.map(function (f) {
+          geometries: this.$store.getters.geojson.features.map(function (f) {
             return f.geometry
           })
         })
@@ -91,7 +91,7 @@ export default {
                 line: 'mylines'
             }
         }
-        shape.download(JSON.parse(this.$store.state.geojson), options)
+        shape.download(this.$store.getters.geojson, options)
         return
       }
 

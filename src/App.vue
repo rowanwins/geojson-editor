@@ -2,13 +2,14 @@
   <Row id="app">
     <Map />
     <Sidebar />
+    <Properties />
   </Row>
 </template>
 
 <script>
 import Map from './components/Map.vue'
 import Sidebar from './components/Sidebar.vue'
-// import Properties from './components/Properties.vue'
+import Properties from './components/Properties.vue'
 import store from './store'
 
 export default {
@@ -16,14 +17,15 @@ export default {
   store: store,
   components: {
     Map,
-    Sidebar
+    Sidebar,
+    Properties
   },
   mounted: function () {
     let params = (new URL(document.location)).searchParams;
     let data = params.get("data");
     if (data) {
-      let geojson = JSON.parse(data)
-      this.$store.commit('setGeoJSON', JSON.stringify(geojson, null, 2))
+      let prettyGeojsonString = JSON.stringify(JSON.parse(data), null, 2)
+      this.$store.commit('setGeoJSON', prettyGeojsonString)
     }
   }
 }

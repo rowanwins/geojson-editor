@@ -1,14 +1,11 @@
 <template>
-  <i-col
-    span="14"
-    class="mapContainer"
-  >
+  <i-col span="14" class="mapContainer">
     <div id="map" />
   </i-col>
 </template>
 
 <script>
-import {createMap} from './../controllers/leafletMap'
+import { createMap } from './../controllers/leafletMap'
 
 export default {
   name: 'LeafletMap',
@@ -19,7 +16,7 @@ export default {
 </script>
 
 <style>
-.mapContainer{
+.mapContainer {
   height: 100%;
 }
 #map {

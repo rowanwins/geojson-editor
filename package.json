@@ -17,7 +17,6 @@
     "leaflet": "^1.4.0",
     "leaflet-draw": "^1.0.4",
     "shp-write": "^0.3.2",
-    "topojson": "^3.0.2",
     "topojson-server": "^3.0.0",
     "vue": "^2.5.22",
     "vue-codemirror": "^4.0.6",
