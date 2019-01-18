@@ -67,11 +67,8 @@ export default {
       if (this.errors.length === 0) {
         const newGeoJSON = JSON.parse(newGeojsonString)
         modifyGeoJSON(newGeoJSON)
-
         this.$store.commit('setGeoJSON', newGeoJSON)
-
       }
-
       this.markErrors()
     },
     markErrors () {
@@ -93,13 +90,13 @@ export default {
 #codeArea {
   height: calc(100vh - 100px);
 }
-.vue-codemirror, .CodeMirror{
+.vue-codemirror, .CodeMirror {
   height: 100%;
 }
-.geojsonError{
+.geojsonError {
   background: #E36A70;
 }
-.geojsonError .CodeMirror-linenumber{
+.geojsonError .CodeMirror-linenumber {
   color: white;
 }
 .cm-s-default .cm-string {
@@ -108,7 +105,7 @@ export default {
 .cm-s-default .cm-number {
   color: #333E4E;
 }
-.CodeMirror-activeline-background{
+.CodeMirror-activeline-background {
   background: #bfc0c026;
 }
 </style>
