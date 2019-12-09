@@ -36,6 +36,15 @@
     <Button class="topBtn right" @click="clearFeatures">
       Clear {{ featureCount }} {{ featureCount !== 1 ? 'features' : 'feature' }}
     </Button>
+    <Modal
+      v-model="pointsModalOpen"
+      ok-text="Ok"
+      cancel-text="Cancel"
+      @on-ok="createRandomPoints"
+    >
+      <p><strong>Number of points to create</strong></p>
+      <Input v-model="numberOfPoints" :number="true" placeholder="100" style="width: 300px" />
+    </Modal>
   </Row>
 </template>
 
@@ -47,6 +56,12 @@ import {randomPoint} from '@turf/random'
 import { zoomToFeatures } from '../controllers/leafletMap'
 export default {
   name: 'TopMenu',
+  data () {
+    return {
+      pointsModalOpen: false,
+      numberOfPoints: 100
+    }
+  },
   computed: {
     doesntRequireParseFixing () {
       return !this.$store.state.requiresParseFixing
@@ -73,7 +88,7 @@ export default {
       if (e === 'fixWindingOrder') this.fixWindingOrder()
     },
     handleToolClick: function (e) {
-      if (e === 'createRandomPoints') this.createRandomPoints()
+      if (e === 'createRandomPoints') this.pointsModalOpen = true
       if (e === 'zoomTo') zoomToFeatures()
       if (e === 'multipartToSinglepart') this.convertMultipart()
     },
@@ -81,7 +96,7 @@ export default {
       this.$store.commit('setGeoJSON', flatten(this.currentGeojson))
     },
     createRandomPoints: function () {
-      const newPoints = randomPoint(25, {bbox: [-180, -90, 180, 90]})
+      const newPoints = randomPoint(this.numberOfPoints, {bbox: [-180, -90, 180, 90]})
       this.$store.commit('setGeoJSON', {
         type: 'FeatureCollection',
         features: this.currentGeojson.features.concat(newPoints.features)

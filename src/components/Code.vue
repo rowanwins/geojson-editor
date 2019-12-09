@@ -27,6 +27,7 @@ export default {
   data () {
     return {
       errorLines: [],
+      gutterErrors: [],
       requiresParseFixing: false,
       errors: {},
       cmOptions: {
@@ -36,12 +37,13 @@ export default {
         styleActiveLine: true,
         lineNumbers: true,
         line: true,
+        gutters: ["CodeMirror-lint-markers"]
       }
     }
   },
   computed: {
     code: function () {
-      return this.$store.state.dodgyGeoJsonString === '' ? this.$store.state.geojsonString :this.$store.state.dodgyGeoJsonString
+      return !this.$store.state.requiresParseFixing ? this.$store.state.geojsonString :this.$store.state.dodgyGeoJsonString
     }
   },
   methods: {
@@ -52,33 +54,55 @@ export default {
 
       this.errors = lint.hint(newGeojsonString)
 
+      let hadParsingError = false
       this.errors.forEach(function (err) {
         if (err.message.startsWith('Parse error')) {
-          this.$store.commit('setRequiresParsingFix', true)
+          hadParsingError = true
           this.$store.commit('setDodgyString', newGeojsonString)
         } else if (err.message.startsWith('Polygons and MultiPolygons')) {
           this.$store.commit('setRequiresWindingOrderFix', true)
         }
-        else {
-          this.$store.commit('setRequiresParsingFix', false)
-        }
         this.errorLines.push(err.line)
       }, this)
+      this.$store.commit('setRequiresParsingFix', hadParsingError)
 
       if (this.errors.length === 0) {
         modifyGeoJSON(JSON.parse(newGeojsonString))
         this.$store.commit('setGeoJSON', newGeojsonString)
+        this.gutterErrors.forEach(function (tooltip) {
+          tooltip.remove()
+        })
+      } else {
+        this.markErrors()
       }
-      this.markErrors()
+
     },
     markErrors () {
+
+      if (this.gutterErrors.length > 0) {
+        this.gutterErrors.forEach(function (tooltip) {
+          tooltip.remove()
+        })
+      }
+
       this.errors.forEach(function (err) {
-        this.$refs.myCm.codemirror.doc.addLineClass(err.line + 1, 'gutter', 'geojsonError')
+        this.$refs.myCm.codemirror.doc.addLineClass(err.line, 'gutter', 'geojsonError')
+
+        var tooltip = document.createElement("div");
+        tooltip.classList.add('tooltip');
+
+        const p = tooltip.appendChild(document.createElement("span"));
+        p.classList.add('tooltiptext')
+        p.innerHTML = err.message;
+        this.gutterErrors.push(tooltip)
+        this.$refs.myCm.codemirror.addWidget({
+          line: err.line - 1,
+          ch: 0}, tooltip, false)
       }, this)
     },
     cleanErrorMarks () {
       this.errorLines.forEach(function (line) {
-        this.$refs.myCm.codemirror.doc.removeLineClass(line + 1, 'gutter', 'geojsonError')
+        this.$refs.myCm.codemirror.doc.removeLineClass(line, 'gutter', 'geojsonError')
       }, this)
       this.$store.commit('clearRequiresFixes')
     }
@@ -107,5 +131,45 @@ export default {
 }
 .CodeMirror-activeline-background {
   background: #bfc0c026;
+}
+
+.tooltip {
+  width: 30px;
+  height: 20px;
+  z-index: 10;
+  margin-left: -30px;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 200px;
+  z-index: 1000;
+  position: absolute;
+  background-color: #464646;
+  color: #fff;
+  text-align: center;
+  padding: 5px 0;
+  top: 50%;
+  transform:translate(0, -50%);
+  border-radius: 6px;
+  left: 105%;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.tooltip .tooltiptext::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 100%;
+  margin-top: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent #464646 transparent transparent;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
 }
 </style>
