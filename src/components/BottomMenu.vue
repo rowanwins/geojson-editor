@@ -71,8 +71,8 @@ export default {
     saveInFormats: function (e) {
       let outData = null
       let outName = e
-      if (e === 'topo') {
-        outData = topojson.topology(this.$store.state.geojsonString)
+      if (e === 'topojson') {
+        outData = topology(this.$store.getters.geojson.features)
       }
       if (e === 'wkt') {
         outData = wkt.stringify({
@@ -82,7 +82,7 @@ export default {
           })
         })
       }
-      if (e == 'shp') {
+      if (e === 'shp') {
         var options = {
             folder: 'myshapes',
             types: {
