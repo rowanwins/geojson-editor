@@ -41,7 +41,7 @@ export default {
   },
   computed: {
     code: function () {
-      return this.$store.state.dodgyGeojsonString === '' ? this.$store.state.geojsonString :this.$store.state.dodgyGeojsonString
+      return this.$store.state.dodgyGeoJsonString === '' ? this.$store.state.geojsonString :this.$store.state.dodgyGeoJsonString
     }
   },
   methods: {

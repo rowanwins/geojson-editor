@@ -88,7 +88,7 @@ export default {
       })
     },
     addMarks: function () {
-      var parsedJson = this.$store.state.dodgyGeojsonString.replace(/(['"])?([a-zA-Z0-9_]+)(['"])?:([^\/])/g, '"$2":$4') //eslint-disable-line
+      var parsedJson = this.$store.state.dodgyGeoJsonString.replace(/(['"])?([a-zA-Z0-9_]+)(['"])?:([^\/])/g, '"$2":$4') //eslint-disable-line
       this.$store.commit('setDodgyString', '')
       this.$store.commit('setGeoJSON', parsedJson)
       this.$store.commit('setRequiresParsingFix', false)

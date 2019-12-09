@@ -28,7 +28,7 @@ export default new Vuex.Store({
       state.requiresWindingOrderFix = fix
     },
     setDodgyString (state, dodgyString) {
-      state.dodgyString = dodgyString
+      state.dodgyGeoJsonString = dodgyString
     },
     clearRequiresFixes (state) {
       state.requiresWindingOrderFix = false
