@@ -50,7 +50,7 @@ export default {
   methods: {
     copy: function () {
       const el = document.createElement('textarea');
-      el.value = this.$store.state.geojson;
+      el.value = this.$store.state.geojsonString;
       document.body.appendChild(el);
       el.select();
       document.execCommand('copy');
@@ -63,7 +63,7 @@ export default {
 
     },
     saveToGeojson: function () {
-      var file = new File([this.code], "exported.geojson", {
+      var file = new File([this.$store.state.geojsonString], "exported.geojson", {
         type: "text/plain;charset=utf-8"
       });
       FileSaver.saveAs(file);

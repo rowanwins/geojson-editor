@@ -41,7 +41,7 @@ export default {
   },
   computed: {
     code: function () {
-      return this.$store.state.geojsonString
+      return this.$store.state.dodgyGeojsonString === '' ? this.$store.state.geojsonString :this.$store.state.dodgyGeojsonString
     }
   },
   methods: {
@@ -55,6 +55,7 @@ export default {
       this.errors.forEach(function (err) {
         if (err.message.startsWith('Parse error')) {
           this.$store.commit('setRequiresParsingFix', true)
+          this.$store.commit('setDodgyString', newGeojsonString)
         } else if (err.message.startsWith('Polygons and MultiPolygons')) {
           this.$store.commit('setRequiresWindingOrderFix', true)
         }
@@ -65,9 +66,8 @@ export default {
       }, this)
 
       if (this.errors.length === 0) {
-        const newGeoJSON = JSON.parse(newGeojsonString)
-        modifyGeoJSON(newGeoJSON)
-        this.$store.commit('setGeoJSON', newGeoJSON)
+        modifyGeoJSON(JSON.parse(newGeojsonString))
+        this.$store.commit('setGeoJSON', newGeojsonString)
       }
       this.markErrors()
     },

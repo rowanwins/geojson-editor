@@ -10,7 +10,8 @@ export default new Vuex.Store({
     geojsonString: `{
   "type": "FeatureCollection",
   "features": []
-}`
+}`,
+    dodgyGeoJsonString: ''
   },
   mutations: {
     setGeoJSON (state, newGeojson) {
@@ -25,6 +26,9 @@ export default new Vuex.Store({
     },
     setRequiresWindingOrderFix (state, fix) {
       state.requiresWindingOrderFix = fix
+    },
+    setDodgyString (state, dodgyString) {
+      state.dodgyString = dodgyString
     },
     clearRequiresFixes (state) {
       state.requiresWindingOrderFix = false
