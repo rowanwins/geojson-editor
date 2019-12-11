@@ -1,5 +1,7 @@
 import Vuex from 'vuex'
 import Vue from 'vue'
+import { modifyGeoJSON } from './controllers/leafletMap'
+
 Vue.use(Vuex)
 
 export default new Vuex.Store({
@@ -17,6 +19,8 @@ export default new Vuex.Store({
     setGeoJSON (state, newGeojson) {
       if (typeof newGeojson !== 'string') newGeojson = JSON.stringify(newGeojson, null, 2)
       state.geojsonString = newGeojson
+      modifyGeoJSON()
+
     },
     setSelectedProperties (state, newProperties)  {
       state.selectedProperties = newProperties

@@ -10,7 +10,6 @@
 </template>
 
 <script>
-import { modifyGeoJSON } from './../controllers/leafletMap'
 import { codemirror } from 'vue-codemirror'
 import 'codemirror/lib/codemirror.css'
 import 'codemirror/theme/base16-light.css'
@@ -66,16 +65,14 @@ export default {
       }, this)
       this.$store.commit('setRequiresParsingFix', hadParsingError)
 
-      if (this.errors.length === 0) {
-        modifyGeoJSON(JSON.parse(newGeojsonString))
+      if (this.errors.length === 0 || !hadParsingError) {
         this.$store.commit('setGeoJSON', newGeojsonString)
         this.gutterErrors.forEach(function (tooltip) {
           tooltip.remove()
         })
-      } else {
-        this.markErrors()
       }
 
+      this.markErrors()
     },
     markErrors () {
 

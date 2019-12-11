@@ -47,5 +47,7 @@ export default {
     font-family: Arial;
     z-index: 10000;
     padding: 10px;
+    max-height: 200px;
+    overflow: auto;
   }
 </style>

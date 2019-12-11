@@ -97,9 +97,10 @@ export function zoomToFeatures () {
    map.fitBounds(drawnItems.getBounds())
 }
 
-export function modifyGeoJSON (newGeoJSON) {
+export function modifyGeoJSON () {
+
   drawnItems.clearLayers()
-  drawnItems.addData(newGeoJSON)
+  drawnItems.addData(store.getters.geojson)
 
   drawnItems.eachLayer(function (layer) {
     layer.on('click', openPopup)
