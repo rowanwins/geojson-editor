@@ -1,5 +1,5 @@
 <template>
-  <i-col span="10" class="sidebar">
+  <i-col class="sidebar" :xs="14" :sm="14" :md="10" :lg="10">
     <top-menu />
     <code-area />
     <bottom-menu />

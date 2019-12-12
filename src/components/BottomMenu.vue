@@ -1,6 +1,6 @@
 <template>
   <Row id="bottomMenu">
-    <Button class="pad" style="float: left; margin-left: 50px" type="info" @click="openModal">
+    <Button class="pad" style="float: left; margin-left: 20px" type="info" @click="openModal">
       Load from url
     </Button>
     <Button class="pad" @click="copy">

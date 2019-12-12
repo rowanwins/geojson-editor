@@ -1,5 +1,5 @@
 <template>
-  <i-col span="14" class="mapContainer">
+  <i-col class="mapContainer" :xs="10" :sm="10" :md="14" :lg="14">
     <div id="map" />
   </i-col>
 </template>
