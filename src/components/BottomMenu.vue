@@ -125,12 +125,6 @@ export default {
       FileSaver.saveAs(file);
     },
     createShare: async function () {
-      // const response = await this.createGist()
-      // const newUrl = new URL(document.location)
-      // let params = newUrl.searchParams;
-      // params.delete('gist')
-      // params.append('gist', response.data.id);
-      // window.history.pushState({}, null, newUrl)
       const that = this
       navigator.clipboard.writeText('dksjbdf').then(function() {
         that.$Notice.open({

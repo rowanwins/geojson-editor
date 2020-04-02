@@ -119,7 +119,9 @@ export default {
       })
     },
     signin: async function () {
-      window.open(`https://github.com/login/oauth/authorize?client_id=31b6608a0ed78122df64&scope=gist,read:user`, 'oauth', `height=400,width=600`)
+
+      const clientId = process.env.NODE_ENV === 'development' ? '66b60b9cad507e50398d' : '31b6608a0ed78122df64'
+      window.open(`https://github.com/login/oauth/authorize?client_id=${clientId}&scope=gist,read:user`, 'oauth', `height=400,width=600`)
     },
     handleFixClick: function (e) {
       if (e === 'addMarks') this.addMarks()
