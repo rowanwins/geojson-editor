@@ -27,12 +27,16 @@ export default {
     }
   },
   mounted: async function () {
-    let params = (new URL(document.location)).searchParams;
+    const thisUrl = new URL(document.location)
+
+    let params = thisUrl.searchParams;
+
     if (params.get("data")) {
       let prettyGeojsonString = JSON.stringify(JSON.parse(params.get("data")), null, 2)
       this.$store.commit('setGeoJSON', prettyGeojsonString)
     } else if (params.get("gist")) {
-      const d = await axios.get(`https://api.github.com/gists/${params.get("gist")}`)
+      const gistId = params.get("gist")
+      const d = await axios.get(`https://api.github.com/gists/${gistId}`)
       const fileNames = Object.keys(d.data.files)
       const data = await axios.get(d.data.files[fileNames[0]].raw_url)
       this.$store.commit('setGeoJSON', data.data)

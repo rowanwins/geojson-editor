@@ -3,11 +3,17 @@
     <Tooltip content="Sign in to Github to share" :disabled="hasGhAccessToken" style="float: left; margin-left: 20px">
       <Button
         :disabled="!hasGhAccessToken"
+        :loading="creatingGist"
         style="float: left; margin-left: 20px"
         type="info" icon="md-share"
         @click="createShare"
       >
-        Share
+        <span v-if="creatingGist">
+          Wait...
+        </span>
+        <span v-else>
+          Share
+        </span>
       </Button>
     </Tooltip>
 
@@ -57,6 +63,7 @@ export default {
   data () {
     return {
       loadDataModal: false,
+      creatingGist: false,
       remoteUrl: ''
     }
   },
@@ -125,8 +132,16 @@ export default {
       FileSaver.saveAs(file);
     },
     createShare: async function () {
+      this.creatingGist = true
       const that = this
-      navigator.clipboard.writeText('dksjbdf').then(function() {
+      const response = await this.createGist()
+      this.creatingGist = false
+      const newUrl = new URL(document.location)
+      let params = newUrl.searchParams;
+      params.delete('gist')
+      params.append('gist', response.data.id);
+      window.history.pushState({}, null, newUrl)
+      navigator.clipboard.writeText(newUrl).then(function() {
         that.$Notice.open({
           title: "Share",
           desc: 'Share copied to clipboard',
