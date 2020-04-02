@@ -80,7 +80,11 @@ export function createMap () {
 }
 
 function clickHandlerForMap () {
-  store.commit('setSelectedProperties', null)
+  store.commit('setSelectedProperties', {
+    properties: null
+  })
+  resetStyleOfPreviousSelection()
+  lastSelectedFeature = null
 }
 
 
@@ -88,9 +92,27 @@ function parseGeoJSONAndSendToStore (geojson) {
   store.commit('setGeoJSON', geojson)
 }
 
+let lastSelectedFeature = null
+
+function highlightSelectedFeature () {
+  lastSelectedFeature.setStyle({
+    color: '#fedc7f'
+  })
+}
+
+function resetStyleOfPreviousSelection () {
+  if (lastSelectedFeature === null) return
+  lastSelectedFeature.setStyle({
+    color: '#666C79'
+  })
+}
+
 function openPopup(e) {
   L.DomEvent.stop(e);
-  store.commit('setSelectedProperties', e.target.feature.properties)
+  resetStyleOfPreviousSelection()
+  lastSelectedFeature = e.target
+  highlightSelectedFeature()
+  store.commit('setSelectedProperties', lastSelectedFeature.feature)
 }
 
 export function zoomToFeatures () {
@@ -101,7 +123,6 @@ export function modifyGeoJSON () {
 
   drawnItems.clearLayers()
   drawnItems.addData(store.getters.geojson)
-
   drawnItems.eachLayer(function (layer) {
     layer.on('click', openPopup)
   })

@@ -1,6 +1,7 @@
 import Vuex from 'vuex'
 import Vue from 'vue'
 import { modifyGeoJSON } from './controllers/leafletMap'
+import { highlightSelectedFeatureInCodeArea } from './controllers/codeMirror'
 
 Vue.use(Vuex)
 
@@ -13,23 +14,31 @@ export default new Vuex.Store({
   "type": "FeatureCollection",
   "features": []
 }`,
-    dodgyGeoJsonString: ''
+    dodgyGeoJsonString: '',
+    githubAccessToken: null,
+    githubUsername: null
   },
   mutations: {
+    setGitHubUsername (state, name) {
+      state.githubUsername = name
+    },
+    setGitHubAccessToken (state, token) {
+      state.githubAccessToken = token
+    },
     setGeoJSON (state, newGeojson) {
       if (typeof newGeojson !== 'string') newGeojson = JSON.stringify(newGeojson, null, 2)
       state.geojsonString = newGeojson
       modifyGeoJSON()
-
     },
-    setSelectedProperties (state, newProperties)  {
-      state.selectedProperties = newProperties
+    setSelectedProperties (state, feature)  {
+      state.selectedProperties = feature.properties
+      // highlightSelectedFeatureInCodeArea(feature, state.geojsonString)
     },
-    setRequiresParsingFix (state, fix) {
-      state.requiresParseFixing = fix
+    setRequiresParsingFix (state, bool) {
+      state.requiresParseFixing = bool
     },
-    setRequiresWindingOrderFix (state, fix) {
-      state.requiresWindingOrderFix = fix
+    setRequiresWindingOrderFix (state, bool) {
+      state.requiresWindingOrderFix = bool
     },
     setDodgyString (state, dodgyString) {
       state.dodgyGeoJsonString = dodgyString
@@ -46,9 +55,8 @@ export default new Vuex.Store({
     featureCount: function (state) {
       const gj = JSON.parse(state.geojsonString)
       if (gj.type === 'FeatureCollection') return gj.features.length
-      if (gj.type === 'GeometryCollection') return gj.geometrieslength
-      if (gj.type === 'Feature') return 1
-      if (gj.type === 'Polygon' || gj.type === 'LineString') return 1
+      if (gj.type === 'GeometryCollection') return gj.geometries.length
+      if (gj.type === 'Feature' || gj.type === 'Geometry') return 1
       return 0
     }
   }

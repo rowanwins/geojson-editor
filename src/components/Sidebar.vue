@@ -1,6 +1,6 @@
 <template>
   <i-col class="sidebar" :xs="14" :sm="14" :md="10" :lg="10">
-    <top-menu />
+    <top-menu :loading-github-user="loadingGithubUser" />
     <code-area />
     <bottom-menu />
   </i-col>
@@ -17,6 +17,9 @@ export default {
     CodeArea,
     BottomMenu,
     TopMenu
+  },
+  props: {
+    loadingGithubUser: Boolean
   }
 }
 </script>

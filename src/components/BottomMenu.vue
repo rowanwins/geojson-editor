@@ -1,10 +1,21 @@
 <template>
   <Row id="bottomMenu">
-    <Button class="pad" style="float: left; margin-left: 20px" type="info" @click="openModal">
-      Load from url
-    </Button>
-    <Button class="pad" @click="copy">
-      Copy to clipboard
+    <Tooltip content="Sign in to Github to share" :disabled="hasGhAccessToken" style="float: left; margin-left: 20px">
+      <Button
+        :disabled="!hasGhAccessToken"
+        style="float: left; margin-left: 20px"
+        type="info" icon="md-share"
+        @click="createShare"
+      >
+        Share
+      </Button>
+    </Tooltip>
+
+    <Button
+      style="float: left; margin-left: 20px"
+      @click="openModal"
+    >
+      Load from URL
     </Button>
     <ButtonGroup>
       <Button @click="saveToGeojson">
@@ -12,10 +23,10 @@
       </Button>
       <Dropdown trigger="click" placement="top-end" @on-click="saveInFormats">
         <a href="javascript:void(0)">
-          <Button icon="arrow-up-b" />
+          <Button icon="md-arrow-dropup" />
         </a>
         <DropdownMenu slot="list">
-          <DropdownItem v-for="format in supportedFormats" :key="format.value" :name="format.value">
+          <DropdownItem v-for="format in supportedFormats" :key="format.value" :name="format.value" :disabled="format.disabled">
             {{ format.label }}
           </DropdownItem>
         </DropdownMenu>
@@ -46,18 +57,33 @@ export default {
   data () {
     return {
       loadDataModal: false,
-      remoteUrl: '',
-      supportedFormats: [{
+      remoteUrl: ''
+    }
+  },
+  computed: {
+    hasGhAccessToken: function () {
+      return this.$store.state.githubAccessToken !== null
+    },
+    supportedFormats: function () {
+      return [{
         label: 'Shapefile',
-        value: 'shp'
+        value: 'shp',
+        disabled: false
       },
       {
         label: 'TopoJSON',
-        value: 'topojson'
+        value: 'topojson',
+        disabled: false
       },
       {
         label: 'WKT',
-        value: 'wkt'
+        value: 'wkt',
+        disabled: false
+      },
+      {
+        label: 'Github Gist',
+        value: 'gist',
+        disabled: !this.hasGhAccessToken
       }
       ]
     }
@@ -91,31 +117,6 @@ export default {
           desc: 'File could not be retrieved from specified url'
         });
       }
-
-    },
-    copy: function () {
-
-      const that = this
-      // This API isn't available in older browsers
-      navigator.clipboard.writeText(this.$store.state.geojsonString).then(function() {
-        that.$Notice.open({
-          title: 'Copied to clipboard',
-          duration: 2.5,
-        })
-      }, function (err) {
-        // If we fail fallback to the old slow way
-        const el = document.createElement('textarea');
-        el.value = this.$store.state.geojsonString;
-        document.body.appendChild(el);
-        el.select();
-        document.execCommand('copy');
-        document.body.removeChild(el);xw
-        this.$Notice.open({
-          title: 'Copied to clipboard',
-          duration: 2.5,
-        })
-      });
-
     },
     saveToGeojson: function () {
       var file = new File([this.$store.state.geojsonString], "exported.geojson", {
@@ -123,9 +124,53 @@ export default {
       });
       FileSaver.saveAs(file);
     },
-    saveInFormats: function (e) {
+    createShare: async function () {
+      // const response = await this.createGist()
+      // const newUrl = new URL(document.location)
+      // let params = newUrl.searchParams;
+      // params.delete('gist')
+      // params.append('gist', response.data.id);
+      // window.history.pushState({}, null, newUrl)
+      const that = this
+      navigator.clipboard.writeText('dksjbdf').then(function() {
+        that.$Notice.open({
+          title: "Share",
+          desc: 'Share copied to clipboard',
+        })
+      })
+    },
+    createGist: async function () {
+      const that = this;
+      return await axios({
+          url: 'https://api.github.com/gists',
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            Authorization: `token ${that.$store.state.githubAccessToken}`
+          },
+          data: {
+            "description": "GeoJson saved from geojson-editor",
+            "public": true,
+            "files": {
+              "data.geojson": {
+                "content": that.$store.state.geojsonString
+              }
+            }
+          }
+      })
+    },
+    saveInFormats: async function (e) {
       let outData = null
       let outName = e
+
+      if (e === 'gist') {
+        const r = await this.createGist()
+        this.$Notice.open({
+          title: 'Gist created',
+          desc: r.data.id
+        })
+        return
+      }
       if (e === 'topojson') {
         outData = topology(this.$store.getters.geojson.features)
       }
@@ -159,7 +204,7 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
 #bottomMenu{
   position: absolute;
   height: 50px;
@@ -169,16 +214,9 @@ export default {
   width: 100%;
   text-align: right;
   z-index: 1000;
-}
-.pad{
-  margin-right: 10px;
-}
-.ivu-notice {
-  top: calc(100vh - 115px)!important;
-  width: 200px;
-}
-.ivu-notice-with-normal:after{
-  background: #BFC0C0;
+  .pad{
+    margin-right: 10px;
+  }
 }
 
 #bottomMenu .ivu-btn-info {

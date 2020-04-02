@@ -1,5 +1,8 @@
 <template>
   <Row id="codeArea">
+    <Button class="copy" icon="md-copy" @click="copy">
+      Copy
+    </Button>
     <codemirror
       ref="myCm"
       :value="code"
@@ -17,6 +20,8 @@ import 'codemirror/addon/selection/active-line.js'
 import 'codemirror/mode/javascript/javascript.js'
 
 import lint from '@mapbox/geojsonhint'
+import { setupCodeMirrorRefs } from '../controllers/codeMirror'
+
 
 export default {
   name: 'CodeArea',
@@ -25,10 +30,9 @@ export default {
   },
   data () {
     return {
-      errorLines: [],
       gutterErrors: [],
       requiresParseFixing: false,
-      errors: {},
+      errors: [],
       cmOptions: {
         tabSize: 2,
         cursorScrollMargin: 50,
@@ -45,11 +49,32 @@ export default {
       return !this.$store.state.requiresParseFixing ? this.$store.state.geojsonString :this.$store.state.dodgyGeoJsonString
     }
   },
+  mounted: function () {
+    setupCodeMirrorRefs(this.$refs.myCm)
+  },
   methods: {
+    copy: function () {
+      const that = this
+      // This API isn't available in older browsers
+      navigator.clipboard.writeText(this.$store.state.geojsonString).then(function() {
+        that.$Notice.open({
+          desc: 'Copied to clipboard',
+        })
+      }, function (err) {
+        // If we fail fallback to the old slow way
+        const el = document.createElement('textarea');
+        el.value = this.$store.state.geojsonString;
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand('copy');
+        document.body.removeChild(el);xw
+        this.$Notice.open({
+          desc: 'Copied to clipboard'
+        })
+      });
+    },
     onCmCodeChange: function (newGeojsonString) {
       this.cleanErrorMarks()
-
-      this.errorLines = []
 
       this.errors = lint.hint(newGeojsonString)
 
@@ -61,30 +86,17 @@ export default {
         } else if (err.message.startsWith('Polygons and MultiPolygons')) {
           this.$store.commit('setRequiresWindingOrderFix', true)
         }
-        this.errorLines.push(err.line)
       }, this)
       this.$store.commit('setRequiresParsingFix', hadParsingError)
 
-      if (this.errors.length === 0 || !hadParsingError) {
+      if (!hadParsingError) {
         this.$store.commit('setGeoJSON', newGeojsonString)
-        this.gutterErrors.forEach(function (tooltip) {
-          tooltip.remove()
-        })
       }
-
       this.markErrors()
     },
     markErrors () {
-
-      if (this.gutterErrors.length > 0) {
-        this.gutterErrors.forEach(function (tooltip) {
-          tooltip.remove()
-        })
-      }
-
       this.errors.forEach(function (err) {
-        this.$refs.myCm.codemirror.doc.addLineClass(err.line, 'gutter', 'geojsonError')
-
+        this.$refs.myCm.codemirror.doc.addLineClass(err.line - 1, 'gutter', 'geojsonError')
         var tooltip = document.createElement("div");
         tooltip.classList.add('tooltip');
 
@@ -93,14 +105,21 @@ export default {
         p.innerHTML = err.message;
         this.gutterErrors.push(tooltip)
         this.$refs.myCm.codemirror.addWidget({
-          line: err.line - 1,
+          line: err.line - 2,
           ch: 0}, tooltip, false)
       }, this)
+
     },
     cleanErrorMarks () {
-      this.errorLines.forEach(function (line) {
-        this.$refs.myCm.codemirror.doc.removeLineClass(line, 'gutter', 'geojsonError')
+
+      this.errors.forEach(function (err) {
+        this.$refs.myCm.codemirror.doc.removeLineClass(err.line - 1, 'gutter', 'geojsonError')
       }, this)
+
+      this.gutterErrors.forEach(function (tooltip) {
+        tooltip.remove()
+      })
+
       this.$store.commit('clearRequiresFixes')
     }
   }
@@ -168,5 +187,13 @@ export default {
 .tooltip:hover .tooltiptext {
   visibility: visible;
   opacity: 1;
+}
+
+#codeArea .copy {
+  position: absolute;
+  right: 20px;
+  z-index: 800;
+  bottom: 20px;
+  color: #969696;
 }
 </style>

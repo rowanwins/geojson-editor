@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head></head>
+<body>
+  <script>
+  var searchParams = new URLSearchParams(window.location.search);
+  const code = searchParams.get("code")
+  if (window.opener && window.opener.parent) {
+    window.opener.parent.oauthCallback(code);
+  } else {
+    window.parent.oauthCallback(code);
+  }
+    window.close();
+  </script>
+</body>
+</html>

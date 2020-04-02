@@ -1,24 +1,9 @@
 <template>
   <Row class="topMenu">
-    <Dropdown placement="bottom-start" @on-click="handleFixClick">
+    <Dropdown placement="bottom-start" @on-click="handleToolClick" class="toolsDropdown">
       <a href="javascript:void(0)">
         <Button class="topBtn">
-          Fix Errors <Icon type="arrow-down-b" />
-        </Button>
-      </a>
-      <DropdownMenu slot="list">
-        <DropdownItem name="addMarks" :disabled="doesntRequireParseFixing">
-          Fix Quotation Marks on Keys
-        </DropdownItem>
-        <DropdownItem name="fixWindingOrder" :disabled="doesntRequireWindingFixing">
-          Fix Winding Order
-        </DropdownItem>
-      </DropdownMenu>
-    </Dropdown>
-    <Dropdown placement="bottom-start" @on-click="handleToolClick">
-      <a href="javascript:void(0)">
-        <Button class="topBtn">
-          Tools <Icon type="arrow-down-b" />
+          Tools <Icon type="md-arrow-dropdown" />
         </Button>
       </a>
       <DropdownMenu slot="list">
@@ -29,13 +14,44 @@
           Zoom to Features
         </DropdownItem>
         <DropdownItem name="multipartToSinglepart">
-          Convert Multipart to Singlepart geometries
+          Convert Multipart to Singlepart
         </DropdownItem>
+        <Dropdown placement="right-start" @on-click="handleFixClick">
+          <DropdownItem>
+            Fix Errors <Icon type="ios-arrow-forward"></Icon>
+          </DropdownItem>
+          <DropdownMenu slot="list">
+            <DropdownItem name="addMarks" :disabled="doesntRequireParseFixing">
+              Fix Quotation Marks on Keys
+            </DropdownItem>
+            <DropdownItem name="fixWindingOrder" :disabled="doesntRequireWindingFixing">
+              Fix Winding Order
+            </DropdownItem>
+          </DropdownMenu>
+        </Dropdown>
       </DropdownMenu>
     </Dropdown>
-    <Button class="topBtn right" @click="clearFeatures">
+    <Button class="topBtn" @click="clearFeatures">
       Clear {{ featureCount }} {{ featureCount !== 1 ? 'features' : 'feature' }}
     </Button>
+    <Button
+      class="topBtn right"
+      :class="{ signedIn: githubUsername }"
+      :loading="loadingGithubUser"
+      @click="signin"
+    >
+      <span v-if="githubUsername === null && !loadingGithubUser">
+        <Icon type="logo-github" />
+        Sign In
+      </span>
+      <span v-else-if="loadingGithubUser">
+        Signing in
+      </span>
+      <span v-else>
+        <Avatar :src="githubImage" size="small" />{{ githubUsername }}
+      </span>
+    </Button>
+
     <Modal
       v-model="pointsModalOpen"
       ok-text="Ok"
@@ -44,6 +60,8 @@
     >
       <p><strong>Number of points to create</strong></p>
       <Input v-model="numberOfPoints" :number="true" placeholder="100" style="width: 300px" />
+      <p><strong>Bounding box</strong></p>
+      <Input v-model="bbox" style="width: 300px" />
     </Modal>
   </Row>
 </template>
@@ -56,13 +74,26 @@ import {randomPoint} from '@turf/random'
 import { zoomToFeatures } from '../controllers/leafletMap'
 export default {
   name: 'TopMenu',
+  props: {
+    loadingGithubUser: Boolean
+  },
   data () {
     return {
       pointsModalOpen: false,
-      numberOfPoints: 100
+      numberOfPoints: 100,
+      bbox: '-180, -90, 180, 90'
     }
   },
   computed: {
+    githubAccessToken: function () {
+      return this.$store.state.githubAccessToken
+    },
+    githubUsername: function () {
+        return this.$store.state.githubUsername === null ? null : this.$store.state.githubUsername.login
+    },
+    githubImage: function () {
+        return this.$store.state.githubUsername === null ? null : this.$store.state.githubUsername.avatar_url
+    },
     doesntRequireParseFixing () {
       return !this.$store.state.requiresParseFixing
     },
@@ -83,6 +114,9 @@ export default {
         "features": []
       })
     },
+    signin: async function () {
+      window.open(`https://github.com/login/oauth/authorize?client_id=31b6608a0ed78122df64&scope=gist,read:user`, 'oauth', `height=400,width=600`)
+    },
     handleFixClick: function (e) {
       if (e === 'addMarks') this.addMarks()
       if (e === 'fixWindingOrder') this.fixWindingOrder()
@@ -96,7 +130,9 @@ export default {
       this.$store.commit('setGeoJSON', flatten(this.currentGeojson))
     },
     createRandomPoints: function () {
-      const newPoints = randomPoint(this.numberOfPoints, {bbox: [-180, -90, 180, 90]})
+      if (this.bbox.split(",").length - 1 !== 3) this.bbox = '-180, -90, 180, 90'
+
+      const newPoints = randomPoint(this.numberOfPoints, {bbox: JSON.parse("[" + this.bbox + "]")})
       this.$store.commit('setGeoJSON', {
         type: 'FeatureCollection',
         features: this.currentGeojson.features.concat(newPoints.features)
@@ -106,21 +142,35 @@ export default {
       var parsedJson = this.$store.state.dodgyGeoJsonString.replace(/(['"])?([a-zA-Z0-9_]+)(['"])?:([^\/])/g, '"$2":$4') //eslint-disable-line
       this.$store.commit('setDodgyString', '')
       this.$store.commit('setGeoJSON', parsedJson)
-      this.$store.commit('setRequiresParsingFix', false)
+      this.$store.commit('setRequiresWindingOrderFix', false)
     },
     fixWindingOrder: function () {
       const newGeojson = rewind(this.$store.getters.geojson)
       this.$store.commit('setGeoJSON', newGeojson)
+      this.$store.commit('setRequiresParsingFix', false)
     }
   }
 }
 </script>
 
-<style>
+<style lang="scss">
 .topMenu{
   padding: 10px;
   background: #FFDC80;
   width: 100%;
+  .signedIn {
+    font-weight: 600;
+    .ivu-avatar-small {
+      margin-right: 5px;
+      width: 20px;
+      height: 20px;
+    }
+  }
+  .toolsDropdown {
+    >.ivu-select-dropdown{
+      margin-left: 20px;
+    }
+  }
 }
 .topBtn {
   background-color: transparent;
@@ -128,9 +178,7 @@ export default {
   border: 1px solid white;
   margin-left: 20px;
 }
-.ivu-dropdown .ivu-select-dropdown{
-  margin-left: 20px;
-}
+
 .right {
   float: right
 }
