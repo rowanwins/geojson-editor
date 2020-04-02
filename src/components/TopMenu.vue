@@ -1,6 +1,10 @@
 <template>
   <Row class="topMenu">
-    <Dropdown placement="bottom-start" @on-click="handleToolClick" class="toolsDropdown">
+    <Dropdown
+      placement="bottom-start"
+      class="toolsDropdown"
+      @on-click="handleToolClick"
+    >
       <a href="javascript:void(0)">
         <Button class="topBtn">
           Tools <Icon type="md-arrow-dropdown" />
@@ -158,6 +162,7 @@ export default {
   padding: 10px;
   background: #FFDC80;
   width: 100%;
+
   .signedIn {
     font-weight: 600;
     .ivu-avatar-small {
@@ -166,20 +171,21 @@ export default {
       height: 20px;
     }
   }
+
   .toolsDropdown {
     >.ivu-select-dropdown{
       margin-left: 20px;
     }
   }
-}
-.topBtn {
-  background-color: transparent;
-  color: #182438;
-  border: 1px solid white;
-  margin-left: 20px;
+
+  .topBtn {
+    border: 1px solid white;
+    margin-left: 20px;
+  }
+
+  .right {
+    float: right
+  }
 }
 
-.right {
-  float: right
-}
 </style>
